@@ -1,0 +1,20 @@
+{
+  "name": "pubnub-functions-mock",
+  "version": "0.0.1",
+  "description": "Mocks PubNub Functions modules for unit testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "babel-core": "^6.22.1",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.22.0",
+    "node-fetch": "^1.6.3",
+    "proxyquire": "^1.7.11",
+    "qs": "^6.3.0",
+    "tmp": "0.0.31"
+  },
+  "author": "open-source@pubnub.com",
+  "license": "ISC"
+}
