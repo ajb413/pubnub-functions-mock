@@ -5,7 +5,7 @@ Unit test PubNub Functions event handlers.
 ## Example with Chai testing
 ```javascript
 const assert = require('chai').assert;
-const Mock = require('pubnub-function-mock');
+const Mock = require('pubnub-functions-mock');
 
 const endpointRequestObject = {
     "body": "{}",
