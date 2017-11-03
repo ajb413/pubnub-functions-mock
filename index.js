@@ -6,7 +6,7 @@ const tmp = require('tmp');
 const qs = require('qs');
 const nodeFetch = require('node-fetch');
 
-const keyValueStorage = {};
+let keyValueStorage = {};
 
 let kvInterface = {
   set: (key, value) => {
@@ -63,13 +63,13 @@ let pubnubInterface = {
   publish: (obj) => {
     return new Promise((resolve, reject) => {
       if (!obj) {
-        reject();
+        reject("[publish] Object is required");
       }
 
       let ts = String(Date.now() * 10000);
 
       if (typeof(obj) !== "object" || !obj.message) {
-        resolve([0,"Invalid JSON", ts]);
+        reject([0,"Invalid JSON", ts]);
       }
 
       resolve([1,"Sent", ts]);
@@ -93,6 +93,10 @@ let pubnubInterface = {
     return new Promise((resolve, reject) => {
       if ( typeof(obj) !== "object" || !obj.uuid ) {
         reject("[whereNow] 'uuid' is required");
+      }
+
+      if ( typeof(obj.uuid) !== "string" ) {
+        reject("uuid must be a String");
       }
 
       resolve({
@@ -120,7 +124,7 @@ let pubnubInterface = {
   setState: (obj) => {
     return new Promise((resolve, reject) => {
       if ( typeof(obj) !== "object" ) {
-        reject();
+        reject("[setState] Object is required");
       }
 
       resolve({
@@ -136,14 +140,18 @@ let pubnubInterface = {
   getState: (obj) => {
     return new Promise((resolve, reject) => {
       if ( typeof(obj) !== "object" || !obj.uuid ) {
-        reject();
+        reject("[getState] 'uuid' is required");
+      }
+
+      if ( typeof(obj.uuid) !== "string" ) {
+        reject("uuid must be a String");
       }
 
       resolve({
         "status": 200,
         "message": "OK",
         "payload": {},
-        "uuid": obj.uuid || "",
+        "uuid": obj.uuid,
         "channel": obj.channels || [],
         "service": "Presence"
       });
@@ -152,7 +160,7 @@ let pubnubInterface = {
   grant: (obj) => {
     return new Promise((resolve, reject) => {
       if (typeof(obj) !== "object" || (!obj.channels && !obj.channelGroups)) {
-        reject();
+        reject("[grant] Object with property 'channels' or 'channelGroups' is required");
       }
 
       resolve({
@@ -173,22 +181,38 @@ let pubnubInterface = {
 };
 
 let queryInterface = {
-  stringify: qs.stringify
+  "stringify": qs.stringify
 };
 
-let importEventHandler = (ehPath) => {
-  const ehContents = fs.readFileSync(ehPath, 'UTF-8');
+let importEventHandler = (ehFilePath) => {
+  const ehContents = fs.readFileSync(ehFilePath, 'UTF-8');
   const transformedCode = babel.transform(ehContents, { presets: ['es2015'], plugins: 'babel-plugin-add-module-exports' });
   const tmpobj = tmp.fileSync();
 
+  // Write the transpiled event handler to a temporary file
   fs.writeFileSync(tmpobj.name, transformedCode.code);
-  return proxyquire(tmpobj.name, {
-    xhr: {'fetch': nodeFetch },
-    pubnub: pubnubInterface,
-    kvstore: kvInterface,
-    'codec/query_string': queryInterface
-  });
-};
 
+  // Reset the keyValueStorage before each test
+  keyValueStorage = {};
+
+  // Define an event handler function with mocked modules within it
+  let mockInstance = proxyquire(tmpobj.name, {
+    "xhr": {'fetch': nodeFetch },
+    "pubnub": pubnubInterface,
+    "kvstore": kvInterface,
+    "codec/query_string": queryInterface
+  });
+
+  // Method to set the KVStore to a JS object for a test
+  mockInstance.mockKVStoreData = (kvObject) => {
+    if (!kvObject || typeof(kvObject) !== 'object') {
+      throw Error('KVStore can only be mocked with an instance of a JavaScript Object');
+    }
+
+    keyValueStorage = kvObject;
+  };
+
+  return mockInstance;
+};
 
 module.exports = importEventHandler;
