@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const babel = require("babel-core");
+const babel = require('babel-core');
 const proxyquire = require('proxyquire').noCallThru();
 const tmp = require('tmp');
 const qs = require('qs');
@@ -184,6 +184,21 @@ let queryInterface = {
   "stringify": qs.stringify
 };
 
+let base64Interface = {
+  btoa: (unencoded) => {
+    return new Buffer(unencoded || '').toString('base64');
+  },
+  atob: (encoded) => {
+    return new Buffer(encoded || '', 'base64').toString('utf8');
+  },
+  encodeString: (unencoded) => {
+    return base64Interface.btoa(unencoded)
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+  },
+  decodeString: this.atob
+};
+
 let importEventHandler = (ehFilePath) => {
   const ehContents = fs.readFileSync(ehFilePath, 'UTF-8');
   const transformedCode = babel.transform(ehContents, { presets: ['es2015'], plugins: 'babel-plugin-add-module-exports' });
@@ -200,7 +215,8 @@ let importEventHandler = (ehFilePath) => {
     "xhr": {'fetch': nodeFetch },
     "pubnub": pubnubInterface,
     "kvstore": kvInterface,
-    "codec/query_string": queryInterface
+    "codec/query_string": queryInterface,
+    "codec/base64": base64Interface
   });
 
   // Method to set the KVStore to a JS object for a test
