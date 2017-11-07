@@ -2,12 +2,25 @@
 
 Unit test PubNub Functions event handlers on your local machine
 
-Currently supported modules for mock ([docs here](https://www.pubnub.com/docs/blocks/xhr-module)):
+##Currently supported modules for mock
+([docs here](https://www.pubnub.com/docs/blocks/xhr-module)):
 - XHR (currently makes **real** requests using https://www.npmjs.com/package/node-fetch)
 - KV Store
 - codec/query_string
 - codec/base64
 - PubNub
+
+Any module can be overridden using `overrideDefaultModules` within a single test body. The module or modules will only be overridden in that single test block.
+```javascript
+endpoint.overrideDefaultModules({
+    "pubnub" : {}
+});
+```
+
+To override a default module in all tests, pass the module object when the Event Handler is initialized.
+```javascript
+endpoint = Mock('./myEndpointEventHandler.js', { "pubnub" : {} });
+```
 
 ## Example PubNub Function Endpoint unit test with Mocha and Chai
 ```javascript
@@ -36,7 +49,7 @@ const endpointResponseObject = {
 };
 
 describe('#endpoint', () => {
-    let endpoint = null;
+    let endpoint;
 
     beforeEach(() => {
         endpoint = Mock('./myEndpointEventHandler.js');
