@@ -9,13 +9,18 @@ const nodeFetch = require('node-fetch');
 let keyValueStorage = {};
 
 let kvInterface = {
-  set: (key, value) => {
+  set: (key, value, ttl) => {
     return new Promise((resolve, reject) => {
       if (typeof(key) !== "string") {
         reject("not a valid key string. kvstore.set expects a string.");
       }
+
+      if (ttl && typeof(ttl) !== "number") {
+        reject("ttl must be a number.");
+      }
+
       keyValueStorage[key] = value;
-      resolve();
+      resolve(null);
     });
   },
   get: (key) => {
@@ -26,7 +31,6 @@ let kvInterface = {
       resolve(keyValueStorage[key]);
     });
   },
-  getCounter: this.get,
   incrCounter:  (key, value) => {
     return new Promise((resolve, reject) => {
       if (typeof(key) !== "string") {
@@ -49,10 +53,11 @@ let kvInterface = {
       delete keyValueStorage[key];
       resolve();
     });
-  },
-  getItem: this.get,
-  setItem: this.set
+  }
 };
+kvInterface.getCounter = kvInterface.get;
+kvInterface.getItem = kvInterface.get;
+kvInterface.setItem = kvInterface.set;
 
 let pubnubInterface = {
   time: () => {
@@ -75,7 +80,6 @@ let pubnubInterface = {
       resolve([1,"Sent", ts]);
     });
   },
-  fire: this.publish,
   history: (obj) => {
     return new Promise((resolve, reject) => { 
       if ( !obj || typeof(obj) !== "object" ) {
@@ -179,6 +183,7 @@ let pubnubInterface = {
     });
   }
 };
+pubnubInterface.fire = pubnubInterface.publish;
 
 let queryInterface = {
   "stringify": qs.stringify
@@ -195,9 +200,9 @@ let base64Interface = {
     return base64Interface.btoa(unencoded)
       .replace(/\+/g, '-')
       .replace(/\//g, '_');
-  },
-  decodeString: this.atob
+  }
 };
+base64Interface.decodeString = base64Interface.atob;
 
 const defaultModules = {
   "xhr": { "fetch": nodeFetch },
@@ -207,7 +212,19 @@ const defaultModules = {
   "codec/base64": base64Interface
 }
 
+<<<<<<< HEAD:src/index.js
+let importEventHandler = (ehFilePath, moduleMocks) => {
+=======
+const defaultModules = {
+  "xhr": { "fetch": nodeFetch },
+  "pubnub": pubnubInterface,
+  "kvstore": kvInterface,
+  "codec/query_string": queryInterface,
+  "codec/base64": base64Interface
+}
+
 let importEventHandler = (ehFilePath) => {
+>>>>>>> master:index.js
   const ehContents = fs.readFileSync(ehFilePath, 'UTF-8');
   const transformedCode = babel.transform(ehContents, { presets: ['es2015'], plugins: 'babel-plugin-add-module-exports' });
   const tmpobj = tmp.fileSync();
@@ -244,6 +261,11 @@ let importEventHandler = (ehFilePath) => {
       modules[moduleKey] = overrideModules[moduleKey];
     });
   };
+
+  // Override modules passed when the event handler is first initialized for all tests
+  if ( moduleMocks ) {
+    ehDefinition.overrideDefaultModules(moduleMocks);
+  }
 
   return ehDefinition;
 };
