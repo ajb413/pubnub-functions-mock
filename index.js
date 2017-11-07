@@ -199,6 +199,14 @@ let base64Interface = {
   decodeString: this.atob
 };
 
+const defaultModules = {
+  "xhr": { "fetch": nodeFetch },
+  "pubnub": pubnubInterface,
+  "kvstore": kvInterface,
+  "codec/query_string": queryInterface,
+  "codec/base64": base64Interface
+}
+
 let importEventHandler = (ehFilePath) => {
   const ehContents = fs.readFileSync(ehFilePath, 'UTF-8');
   const transformedCode = babel.transform(ehContents, { presets: ['es2015'], plugins: 'babel-plugin-add-module-exports' });
@@ -210,25 +218,34 @@ let importEventHandler = (ehFilePath) => {
   // Reset the keyValueStorage before each test
   keyValueStorage = {};
 
-  // Define an event handler function with mocked modules within it
-  let mockInstance = proxyquire(tmpobj.name, {
-    "xhr": {'fetch': nodeFetch },
-    "pubnub": pubnubInterface,
-    "kvstore": kvInterface,
-    "codec/query_string": queryInterface,
-    "codec/base64": base64Interface
-  });
+  // Reset the mock modules to use before each test
+  let modules = Object.assign({}, defaultModules);
+
+  // Define an event handler function with mocked modules referenced within
+  let ehDefinition = proxyquire(tmpobj.name, modules);
 
   // Method to set the KVStore to a JS object for a test
-  mockInstance.mockKVStoreData = (kvObject) => {
+  ehDefinition.mockKVStoreData = (kvObject) => {
     if (!kvObject || typeof(kvObject) !== 'object') {
-      throw Error('KVStore can only be mocked with an instance of a JavaScript Object');
+      throw Error('KVStore can only be mocked using a JavaScript Object');
     }
 
     keyValueStorage = kvObject;
   };
 
-  return mockInstance;
+  // Method to override any default modules for a test
+  ehDefinition.overrideDefaultModules = (overrideModules) => {
+    if (!overrideModules || typeof(overrideModules) !== 'object') {
+      throw Error('Modules can only be mocked using a JavaScript Object');
+    }
+
+    // Override any default mock specified in overrideModules
+    Object.keys(overrideModules).forEach((moduleKey) => {
+      modules[moduleKey] = overrideModules[moduleKey];
+    });
+  };
+
+  return ehDefinition;
 };
 
 module.exports = importEventHandler;
