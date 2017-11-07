@@ -212,7 +212,19 @@ const defaultModules = {
   "codec/base64": base64Interface
 }
 
+<<<<<<< HEAD:src/index.js
 let importEventHandler = (ehFilePath, moduleMocks) => {
+=======
+const defaultModules = {
+  "xhr": { "fetch": nodeFetch },
+  "pubnub": pubnubInterface,
+  "kvstore": kvInterface,
+  "codec/query_string": queryInterface,
+  "codec/base64": base64Interface
+}
+
+let importEventHandler = (ehFilePath) => {
+>>>>>>> master:index.js
   const ehContents = fs.readFileSync(ehFilePath, 'UTF-8');
   const transformedCode = babel.transform(ehContents, { presets: ['es2015'], plugins: 'babel-plugin-add-module-exports' });
   const tmpobj = tmp.fileSync();
