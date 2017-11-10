@@ -44,7 +44,6 @@ export default (request, response) => {
     if (request.defaultMock) {
         let pubnub = require('pubnub');
         if (pubnub.publish) {
-            console.log(pubnub.publish);
             response.status = 200;
             return response.send(true);
         }
