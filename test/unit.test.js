@@ -55,6 +55,27 @@ describe('#endpoint', () => {
         });
     });
 
+    it('returns GET using "xhr"', (done) => {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.xhr = true;
+
+        let correctResult = {
+            "body": true,
+            "status": 200 
+        };
+
+        endpoint(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'response body');
+
+            done();
+        });
+    });
+
     it('tests "codec/base64"', (done) => {
         
         let request = Object.assign({}, endpointRequestObject);
@@ -95,6 +116,7 @@ describe('#endpoint', () => {
         let response = Object.assign({}, endpointResponseObject);
 
         request.getKvValue = true;
+        request.key = "key";
 
         let preExistingValue = { "key" : "value" };
 
@@ -121,8 +143,108 @@ describe('#endpoint', () => {
         let response = Object.assign({}, endpointResponseObject);
 
         request.setKvValue = true;
+        request.key = 'key';
+        request.value = 'value';
 
-        let setValue = { "key" : "value" };
+        let correctResult = {
+            "body": null,
+            "status": 200 
+        };
+
+        endpoint(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'response body');
+
+            done();
+        });
+    });
+
+    it('returns a kvstore "getItem" value that has been mocked', (done) => {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.getItem = true;
+        request.key = "key";
+
+        let preExistingValue = { "key" : "value" };
+
+        let correctResult = {
+            "body": preExistingValue.key,
+            "status": 200 
+        };
+
+        // Mock a pre-existing KVStore value for this test only
+        endpoint.mockKVStoreData(preExistingValue);
+
+        endpoint(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'response body');
+
+            done();
+        });
+    });
+
+    it('sets a kvstore value with "setItem"', (done) => {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.setItem = true;
+        request.key = 'key';
+        request.value = 'value';
+
+        let correctResult = {
+            "body": null,
+            "status": 200 
+        };
+
+        endpoint(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'response body');
+
+            done();
+        });
+    });
+
+    it('returns a kvstore "getCounter" value that has been mocked', (done) => {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.getKvCounter = true;
+        request.key = "key";
+
+        let preExistingValue = { "key" : 456 };
+
+        let correctResult = {
+            "body": preExistingValue.key,
+            "status": 200 
+        };
+
+        // Mock a pre-existing KVStore value for this test only
+        endpoint.mockKVStoreCounters(preExistingValue);
+
+        endpoint(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'response body');
+
+            done();
+        });
+    });
+
+    it('increments a kvstore value', (done) => {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.incKvValue = true;
+        request.key = 'key';
+        request.value = 123;
 
         let correctResult = {
             "body": null,
