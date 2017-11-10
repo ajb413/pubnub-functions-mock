@@ -1,8 +1,10 @@
 # PubNub Functions Mock
 
+[![Coverage Status](https://coveralls.io/repos/github/ajb413/pubnub-functions-mock/badge.svg?branch=master)](https://coveralls.io/github/ajb413/pubnub-functions-mock?branch=master)
+
 Unit test PubNub Functions event handlers on your local machine
 
-##Currently supported modules for mock
+## Currently supported modules for mock
 ([docs here](https://www.pubnub.com/docs/blocks/xhr-module)):
 - XHR (currently makes **real** requests using https://www.npmjs.com/package/node-fetch)
 - KV Store
