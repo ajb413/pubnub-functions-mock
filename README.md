@@ -23,6 +23,16 @@ To override a default module in all tests, pass the module object when the Event
 endpoint = Mock('./myEndpointEventHandler.js', { "pubnub" : {} });
 ```
 
+Mock the KVStore for a test
+```javascript
+endpoint.mockKVStoreData({"key":"value"});
+```
+
+Mock the KVStore counters for a test
+```javascript
+endpoint.mockKVStoreCounters({"key":123});
+```
+
 ## Example PubNub Function Endpoint unit test with Mocha and Chai
 ```javascript
 // myTest.js
