@@ -1,19 +1,74 @@
 export default (request, response) => {
     const kvstore = require('kvstore');
     const base64Codec = require('codec/base64');
+    const xhr = require('xhr');
+
+    const testFail = (err) => {
+        response.status = 500;
+        return response.send(err);
+    };
+
+    if (request.xhr) {
+        return xhr.fetch("https://httpbin.org/get").then((res) => {
+            if (res.status >= 200 && res.status < 300) {
+                response.status = 200;
+                return response.send(true);
+            }
+            else {
+                testFail(res);
+            }
+        }).catch(testFail);
+    }
 
     if (request.getKvValue) {
-        return kvstore.get('key').then((value) => {
+        let key = request.key;
+        return kvstore.get(key).then((value) => {
             response.status = 200;
             return response.send(value);
-        });
+        }).catch(testFail);
     }
 
     if (request.setKvValue) {
-        return kvstore.set('key', 'value', 123).then((value) => {
+        let key = request.key;
+        let value = request.value;
+        return kvstore.set(key, value, 123).then((value) => {
             response.status = 200;
             return response.send(value);
-        });
+        }).catch(testFail);
+    }
+
+    if (request.getItem) {
+        let key = request.key;
+        return kvstore.getItem(key).then((value) => {
+            response.status = 200;
+            return response.send(value);
+        }).catch(testFail);
+    }
+
+    if (request.setItem) {
+        let key = request.key;
+        let value = request.value;
+        return kvstore.setItem(key, value, 123).then((value) => {
+            response.status = 200;
+            return response.send(value);
+        }).catch(testFail);
+    }
+
+    if (request.incKvValue) {
+        let key = request.key;
+        let value = request.value;
+        return kvstore.incrCounter(key, value, 123).then((value) => {
+            response.status = 200;
+            return response.send(value);
+        }).catch(testFail);
+    }
+
+    if (request.getKvCounter) {
+        let key = request.key;
+        return kvstore.getCounter(key).then((value) => {
+            response.status = 200;
+            return response.send(value);
+        }).catch(testFail);
     }
 
     if (request.b64) {
@@ -38,7 +93,7 @@ export default (request, response) => {
         pubnub().then((shouldBeTrue) => {
             response.status = 200;
             return response.send(shouldBeTrue);
-        });
+        }).catch(testFail);
     }
 
     if (request.defaultMock) {
