@@ -7,6 +7,7 @@ const qs = require('qs');
 const nodeFetch = require('node-fetch');
 
 let keyValueStorage = {};
+let keyValueCounters = {};
 
 let kvInterface = {
   set: (key, value, ttl) => {
@@ -26,7 +27,7 @@ let kvInterface = {
   get: (key) => {
     return new Promise((resolve, reject) => {
       if (typeof(key) !== "string") {
-        reject("not a valid key string. kvstore.get expects a string.");
+        reject("not a valid key. kvstore.get expects a string.");
       }
       resolve(keyValueStorage[key]);
     });
@@ -34,28 +35,40 @@ let kvInterface = {
   incrCounter:  (key, value) => {
     return new Promise((resolve, reject) => {
       if (typeof(key) !== "string") {
-        reject("not a valid key string. kvstore.incrCounter expects a string.");
+        reject("not a valid key. kvstore.incrCounter expects a string.");
       }
 
       if (value && typeof(value) !== "number") {
-        reject("not a valid number value. kvstore.incrCounter expects a number.");
+        reject("not a valid value. kvstore.incrCounter expects a number.");
       }
 
-      keyValueStorage[key] = value || 1;
-      resolve();
+      if (!keyValueCounters[key]) {
+        keyValueCounters[key] = value || 1;
+      } else {
+        keyValueCounters[key] += value || 1;
+      }
+
+      resolve(null);
+    });
+  },
+  getCounter: (key) => {
+    return new Promise((resolve, reject) => {
+      if (typeof(key) !== "string") {
+        reject("not a valid key. kvstore.get expects a string.");
+      }
+      resolve(keyValueCounters[key]);
     });
   },
   removeItem: (key) => {
     return new Promise((resolve, reject) => {
       if (typeof(key) !== "string") {
-        reject("not a valid key string. kvstore.removeItem expects a string.");
+        reject("not a valid key. kvstore.removeItem expects a string.");
       }
       delete keyValueStorage[key];
       resolve();
     });
   }
 };
-kvInterface.getCounter = kvInterface.get;
 kvInterface.getItem = kvInterface.get;
 kvInterface.setItem = kvInterface.set;
 
@@ -222,6 +235,7 @@ let importEventHandler = (ehFilePath, moduleMocks) => {
 
   // Reset the keyValueStorage before each test
   keyValueStorage = {};
+  keyValueCounters = {};
 
   // Reset the mock modules to use before each test
   let modules = Object.assign({}, defaultModules);
@@ -238,6 +252,15 @@ let importEventHandler = (ehFilePath, moduleMocks) => {
     keyValueStorage = kvObject;
   };
 
+  // Method to set the KVStore counters to a JS object for a test
+  ehDefinition.mockKVStoreCounters = (kvObject) => {
+    if (!kvObject || typeof(kvObject) !== 'object') {
+      throw Error('KVStore counters can only be mocked using a JavaScript Object');
+    }
+
+    keyValueCounters = kvObject;
+  };
+
   // Method to override any default modules for a test
   ehDefinition.overrideDefaultModules = (overrideModules) => {
     if (!overrideModules || typeof(overrideModules) !== 'object') {
@@ -251,7 +274,7 @@ let importEventHandler = (ehFilePath, moduleMocks) => {
   };
 
   // Override modules passed when the event handler is first initialized for all tests
-  if ( moduleMocks ) {
+  if (moduleMocks) {
     ehDefinition.overrideDefaultModules(moduleMocks);
   }
 
