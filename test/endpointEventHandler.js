@@ -90,10 +90,8 @@ export default (request, response) => {
 
     if (request.testOverride) {
         let pubnub = require('pubnub');
-        pubnub().then((shouldBeTrue) => {
-            response.status = 200;
-            return response.send(shouldBeTrue);
-        }).catch(testFail);
+        response.status = 200;
+        return response.send(pubnub);
     }
 
     if (request.defaultMock) {
@@ -102,6 +100,20 @@ export default (request, response) => {
             response.status = 200;
             return response.send(true);
         }
+    }
+
+    if (request.toGrant) {
+        let pubnub = require('pubnub');
+        let toGrant = request.toGrant;
+        return pubnub.grant(toGrant).then((value) => {
+            if (value.message === 'Success') {
+                response.status = 200;
+                return response.send(value.message); 
+            } else {
+                return testFail(value); 
+            }
+            
+        }).catch(testFail);
     }
 
     response.status = 200;

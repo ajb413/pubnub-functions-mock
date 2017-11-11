@@ -1,4 +1,5 @@
 const assert = require('chai').assert;
+const expect = require('chai').expect;
 const Mock = require('../src/index.js');
 
 const endpointRequestObject = {
@@ -12,7 +13,7 @@ const endpointResponseObject = {
     "headers": {},
     "status": 200,
     "send": function ( body ) {
-        return new Promise( (resolve, reject) => {
+        return new Promise( (resolve) => {
             if (body === undefined) {
                 body = "";
             }
@@ -25,18 +26,18 @@ const endpointResponseObject = {
 };
 
 describe('#endpoint', () => {
-    let endpoint = null;
+    let endpoint;
 
     beforeEach(() => {
         endpoint = Mock('./test/endpointEventHandler.js');
     });
 
-    it('creates endpoint event handler of type Function', (done) => {
+    it('creates endpoint event handler of type Function', function (done) {
         assert.isFunction(endpoint, 'was successfully created');
         done();
     });
 
-    it('returns "Hello World!"', (done) => {
+    it('returns "Hello World!"', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -55,7 +56,7 @@ describe('#endpoint', () => {
         });
     });
 
-    it('returns GET using "xhr"', (done) => {
+    it('returns GET using "xhr"', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -76,7 +77,7 @@ describe('#endpoint', () => {
         });
     });
 
-    it('tests "codec/base64"', (done) => {
+    it('tests "codec/base64"', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -110,7 +111,7 @@ describe('#endpoint', () => {
         });
     });
 
-    it('returns a kvstore "get" value that has been mocked', (done) => {
+    it('returns a kvstore "get" value that has been mocked', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -137,7 +138,37 @@ describe('#endpoint', () => {
         });
     });
 
-    it('sets a kvstore value', (done) => {
+    it('fails to mock the KVStore', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        let preExistingValue = null;
+
+        expect(function () {
+            // Mock a pre-existing KVStore value for this test only
+            endpoint.mockKVStoreData(preExistingValue);
+        }).to.throw(Error);
+
+        done();
+    });
+
+    it('fails to mock the KVStore counters', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        let preExistingValue = null;
+
+        expect(function () {
+            // Mock a pre-existing KVStore counter for this test only
+            endpoint.mockKVStoreCounters(preExistingValue);
+        }).to.throw(Error);
+
+        done();
+    });
+
+    it('sets a kvstore value', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -160,7 +191,7 @@ describe('#endpoint', () => {
         });
     });
 
-    it('returns a kvstore "getItem" value that has been mocked', (done) => {
+    it('returns a kvstore "getItem" value that has been mocked', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -187,7 +218,7 @@ describe('#endpoint', () => {
         });
     });
 
-    it('sets a kvstore value with "setItem"', (done) => {
+    it('sets a kvstore value with "setItem"', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -210,7 +241,7 @@ describe('#endpoint', () => {
         });
     });
 
-    it('returns a kvstore "getCounter" value that has been mocked', (done) => {
+    it('returns a kvstore "getCounter" value that has been mocked', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -237,7 +268,7 @@ describe('#endpoint', () => {
         });
     });
 
-    it('increments a kvstore value', (done) => {
+    it('increments a kvstore value', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -260,7 +291,7 @@ describe('#endpoint', () => {
         });
     });
 
-    it('overrides pubnub mock for this 1 test', (done) => {
+    it('overrides default modules', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -268,28 +299,85 @@ describe('#endpoint', () => {
         request.testOverride = true;
 
         let overrides = {
-            "pubnub": () => {
-                return new Promise((resolve) => {
-                    resolve(true);
-                });
+            "pubnub": function () {
+                return new Promise.resolve(true);
+            }
+        };
+
+        let correctResult = {
+            "body": overrides.pubnub,
+            "status": 200 
+        };
+
+        let ep = Mock('./test/endpointEventHandler.js', overrides);
+
+        ep(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'response body');
+
+            done();
+        });
+    });
+
+    it('fails to override default modules', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        let overrides = null;
+
+        expect(() => {
+            endpoint = Mock('./test/endpointEventHandler.js', overrides);
+        }).to.throw(Error);
+
+        done();
+    });
+
+    it('overrides pubnub mock for this 1 test', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.testOverride = true;
+
+        let overrides = {
+            "pubnub": function () {
+                return new Promise.resolve(true);
             }
         };
 
         endpoint.overrideDefaultModules(overrides);
 
         let correctResult = {
+            "body": overrides.pubnub,
             "status": 200 
         };
 
         endpoint(request, response).then((testResult) => {
-
+            
             assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'response body');
 
             done();
         });
     });
 
-    it('"require()" pubnub module, should be an instance of the default mock', (done) => {
+    it('fails to override pubnub mock for this 1 test', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        let overrides = null;
+
+        expect(() => {
+            endpoint.overrideDefaultModules(overrides);
+        }).to.throw(Error);
+
+        done();
+    });
+
+    it('"require()" pubnub module, should be an instance of the default mock', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -297,16 +385,61 @@ describe('#endpoint', () => {
         request.defaultMock = true;
 
         let correctResult = {
-            "status": 200 
+            "body": true,
+            "status": 200
         };
 
         endpoint(request, response).then((testResult) => {
 
             assert.equal(testResult.status, correctResult.status, 'status');
-            assert.equal(testResult.body, true, 'body');
+            assert.equal(testResult.body, correctResult.body, 'body');
 
             done();
         });
+    });
+
+    it('pubnub grant', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.grant = true;
+
+        request.toGrant = {
+            "channels": ["test"]
+        };
+
+        let correctResult = {
+            "body": "Success",
+            "status": 200
+        };
+
+        endpoint(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'body');
+
+            done();
+        });
+    });
+
+    it('fails to complete pubnub grant', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.grant = true;
+        request.toGrant = {};
+
+        let correctResult = {
+            "status": 500
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            done();
+        });
+
     });
 
 });
