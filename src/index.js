@@ -177,7 +177,7 @@ let pubnubInterface = {
   grant: (obj) => {
     return new Promise((resolve, reject) => {
       if (typeof(obj) !== "object" || (!obj.channels && !obj.channelGroups)) {
-        reject("[grant] Object with property 'channels' or 'channelGroups' is required");
+        throw Error("[grant] Object with property 'channels' or 'channelGroups' is required");
       }
 
       resolve({
@@ -274,7 +274,7 @@ let importEventHandler = (ehFilePath, moduleMocks) => {
   };
 
   // Override modules passed when the event handler is first initialized for all tests
-  if (moduleMocks) {
+  if (moduleMocks !== undefined) {
     ehDefinition.overrideDefaultModules(moduleMocks);
   }
 
