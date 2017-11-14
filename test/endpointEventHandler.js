@@ -59,7 +59,7 @@ export default (request, response) => {
     if (request.incKvValue) {
         let key = request.key;
         let value = request.value;
-        return kvstore.incrCounter(key, value, 123).then((value) => {
+        return kvstore.incrCounter(key, value).then((value) => {
             response.status = 200;
             return response.send(value);
         }).catch(testFail);

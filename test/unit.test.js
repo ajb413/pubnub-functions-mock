@@ -111,7 +111,26 @@ describe('#endpoint', () => {
         });
     });
 
-    it('returns a kvstore "get" value that has been mocked', function (done) {
+    it('fails to kvstore.get', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.getKvValue = true;
+        request.key = 123;
+
+        let correctResult = {
+            "status": 500 
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+        })
+
+        done();
+    });
+
+    it('returns a kvstore.get value that has been mocked', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -297,6 +316,47 @@ describe('#endpoint', () => {
         });
     });
 
+    it('fails to kvstore.getCounter', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.getKvCounter = true;
+        request.key = 123;
+
+        let correctResult = {
+            "status": 500
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            done();
+        });
+
+    });
+
+    it('kvstore.getCounter', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.getKvCounter = true;
+        request.key = 'key';
+
+        let correctResult = {
+            "body": 0,
+            "status": 200 
+        };
+
+        endpoint(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'response body');
+
+            done();
+        });
+    });
+
     it('fails to kvstore.incrCounter', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
@@ -333,7 +393,35 @@ describe('#endpoint', () => {
         request.value = 123;
 
         let correctResult = {
-            "body": null,
+            "body": 123,
+            "status": 200 
+        };
+
+        endpoint(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'response body');
+
+            done();
+        });
+    });
+
+    it('increments a kvstore "incrCounter" value that has been mocked', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        let preExistingValue = { "key" : 10 };
+
+        // Mock a pre-existing KVStore value for this test only
+        endpoint.mockKVStoreCounters(preExistingValue);
+
+        request.incKvValue = true;
+        request.key = 'key';
+        request.value = 3;
+
+        let correctResult = {
+            "body": 13,
             "status": 200 
         };
 
