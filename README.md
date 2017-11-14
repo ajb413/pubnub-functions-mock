@@ -17,7 +17,7 @@ Any module can be overridden using `overrideDefaultModules` within a single test
 ```javascript
 endpoint.overrideDefaultModules({
     "xhr" : () => {
-        return new Promise.resolve(200);
+        return Promise.resolve(200);
     }
 });
 ```
@@ -26,7 +26,7 @@ To override a default module in all tests, pass the module object when the Event
 ```javascript
 endpoint = Mock('./myEndpointEventHandler.js', { 
     "xhr" : () => {
-        return new Promise.resolve(200);
+        return Promise.resolve(200);
     }
 });
 ```
