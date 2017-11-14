@@ -31,7 +31,8 @@ export default (request, response) => {
     if (request.setKvValue) {
         let key = request.key;
         let value = request.value;
-        return kvstore.set(key, value, 123).then((value) => {
+        let ttl = request.ttl;
+        return kvstore.set(key, value, ttl).then((value) => {
             response.status = 200;
             return response.send(value);
         }).catch(testFail);
@@ -48,7 +49,8 @@ export default (request, response) => {
     if (request.setItem) {
         let key = request.key;
         let value = request.value;
-        return kvstore.setItem(key, value, 123).then((value) => {
+        let ttl = request.ttl;
+        return kvstore.setItem(key, value, ttl).then((value) => {
             response.status = 200;
             return response.send(value);
         }).catch(testFail);
@@ -66,6 +68,14 @@ export default (request, response) => {
     if (request.getKvCounter) {
         let key = request.key;
         return kvstore.getCounter(key).then((value) => {
+            response.status = 200;
+            return response.send(value);
+        }).catch(testFail);
+    }
+
+    if (request.removeItem) {
+        let key = request.removeItem;
+        return kvstore.removeItem(key).then((value) => {
             response.status = 200;
             return response.send(value);
         }).catch(testFail);
@@ -100,6 +110,33 @@ export default (request, response) => {
             response.status = 200;
             return response.send(true);
         }
+    }
+
+    if (request.pnTime) {
+        let pubnub = require('pubnub');
+        return pubnub.time().then((value) => {
+            if (typeof(value) === 'number') {
+                response.status = 200;
+                return response.send(value); 
+            } else {
+                return testFail(value); 
+            }
+            
+        }).catch(testFail);
+    }
+
+    if (request.pub) {
+        let pubnub = require('pubnub');
+        let toPublish = request.toPublish;
+        return pubnub.publish(toPublish).then((value) => {
+            if (value[1] === 'Sent') {
+                response.status = 200;
+                return response.send(value[1]); 
+            } else {
+                return testFail(value); 
+            }
+            
+        }).catch(testFail);
     }
 
     if (request.toGrant) {
