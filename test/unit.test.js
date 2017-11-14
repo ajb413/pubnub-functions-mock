@@ -13,7 +13,7 @@ const endpointResponseObject = {
     "headers": {},
     "status": 200,
     "send": function ( body ) {
-        return new Promise( (resolve) => {
+        return new Promise((resolve) => {
             if (body === undefined) {
                 body = "";
             }
@@ -482,7 +482,7 @@ describe('#endpoint', () => {
 
         let overrides = {
             "pubnub": function () {
-                return new Promise.resolve(true);
+                return Promise.resolve(true);
             }
         };
 
@@ -525,7 +525,7 @@ describe('#endpoint', () => {
 
         let overrides = {
             "pubnub": function () {
-                return new Promise.resolve(true);
+                return Promise.resolve(true);
             }
         };
 
