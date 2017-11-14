@@ -39,7 +39,7 @@ const kvInterface = {
                 kvInterface.keyValueCounters[key] += value || 1;
             }
 
-            resolve(null);
+            resolve(kvInterface.keyValueCounters[key]);
         });
     },
     getCounter: (key) => {
@@ -47,7 +47,7 @@ const kvInterface = {
             if (typeof(key) !== "string") {
                 throw Error("not a valid key. kvstore.get expects a string.");
             }
-            resolve(kvInterface.keyValueCounters[key]);
+            resolve(kvInterface.keyValueCounters[key] || 0);
         });
     },
     removeItem: (key) => {
