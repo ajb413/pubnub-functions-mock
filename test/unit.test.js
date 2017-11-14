@@ -398,7 +398,7 @@ describe('#endpoint', () => {
         });
     });
 
-    it('pubnub grant', function (done) {
+    it('pubnub.grant', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -423,12 +423,11 @@ describe('#endpoint', () => {
         });
     });
 
-    it('fails to complete pubnub grant', function (done) {
+    it('fails to pubnub.grant', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
 
-        request.grant = true;
         request.toGrant = {};
 
         let correctResult = {
@@ -437,6 +436,204 @@ describe('#endpoint', () => {
 
         endpoint(request, response).then((testResult) => {
             assert.equal(testResult.status, correctResult.status, 'status');
+            done();
+        });
+
+    });
+
+    it('fails to pubnub.getState', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.toGetState = "not object";
+
+        let correctResult = {
+            "status": 500
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+        }).then(() => {
+            request.toGetState = { "uuid": undefined };
+            return endpoint(request, response);
+        }).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            done();
+        });
+
+    });
+
+    it('pubnub.getState', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.toGetState = { "uuid": "test" };
+
+        let correctResult = {
+            "body": "OK",
+            "status": 200
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'body');
+            done();
+        });
+
+    });
+
+    it('fails to pubnub.setState', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.toSetState = "not object";
+
+        let correctResult = {
+            "status": 500
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+        }).then(() => {
+            request.toSetState = { "uuid": undefined };
+            return endpoint(request, response);
+        }).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            done();
+        });
+
+    });
+
+    it('pubnub.setState', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.toSetState = { "uuid": "test" };
+
+        let correctResult = {
+            "body": "OK",
+            "status": 200
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'body');
+            done();
+        });
+
+    });
+
+    it('pubnub.hereNow', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.toHereNow = true;
+
+        let correctResult = {
+            "body": "OK",
+            "status": 200
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'body');
+            done();
+        });
+
+    });
+
+    it('fails to pubnub.whereNow', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.toWhereNow = "not object";
+
+        let correctResult = {
+            "status": 500
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+        }).then(() => {
+            request.toWhereNow = { "uuid": undefined };
+            return endpoint(request, response);
+        }).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            done();
+        });
+
+    });
+
+    it('pubnub.whereNow', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.toWhereNow = { "uuid": "test" };
+
+        let correctResult = {
+            "body": "OK",
+            "status": 200
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'body');
+            done();
+        });
+
+    });
+
+    it('fails to pubnub.history', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.history = {
+            toHistory: "not object"
+        };
+
+        let correctResult = {
+            "status": 500
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+        }).then(() => {
+            request.history = {
+                toHistory: null
+            };
+            return endpoint(request, response);
+        }).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            done();
+        });
+
+    });
+
+    it('pubnub.history', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.history = {
+            toHistory: {}
+        };
+
+        let correctResult = {
+            "body": true,
+            "status": 200
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'body');
             done();
         });
 
