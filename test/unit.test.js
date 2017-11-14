@@ -168,7 +168,34 @@ describe('#endpoint', () => {
         done();
     });
 
-    it('sets a kvstore value', function (done) {
+    it('fails to kvstore.set', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.setKvValue = true;
+        request.key = null;
+        request.value = 'value';
+        request.ttl = 123;
+
+        let correctResult = {
+            "status": 500
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+        }).then(() => {
+            request.key = 'test';
+            request.ttl = '123';
+            return endpoint(request, response);
+        }).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            done();
+        });
+
+    });
+
+    it('kvstore.set', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -176,6 +203,7 @@ describe('#endpoint', () => {
         request.setKvValue = true;
         request.key = 'key';
         request.value = 'value';
+        request.ttl = 123;
 
         let correctResult = {
             "body": null,
@@ -226,6 +254,7 @@ describe('#endpoint', () => {
         request.setItem = true;
         request.key = 'key';
         request.value = 'value';
+        request.ttl = 123;
 
         let correctResult = {
             "body": null,
@@ -268,7 +297,33 @@ describe('#endpoint', () => {
         });
     });
 
-    it('increments a kvstore value', function (done) {
+    it('fails to kvstore.incrCounter', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.incKvValue = true;
+        request.key = 123;
+        request.value = 123;
+
+        let correctResult = {
+            "status": 500
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+        }).then(() => {
+            request.key = 'test';
+            request.value = 'test';
+            return endpoint(request, response);
+        }).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            done();
+        });
+
+    });
+
+    it('kvstore.incrCounter', function (done) {
         
         let request = Object.assign({}, endpointRequestObject);
         let response = Object.assign({}, endpointResponseObject);
@@ -276,6 +331,45 @@ describe('#endpoint', () => {
         request.incKvValue = true;
         request.key = 'key';
         request.value = 123;
+
+        let correctResult = {
+            "body": null,
+            "status": 200 
+        };
+
+        endpoint(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'response body');
+
+            done();
+        });
+    });
+
+    it('fails to kvstore.removeItem', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.removeItem = 123;
+
+        let correctResult = {
+            "status": 500
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            done();
+        });
+
+    });
+
+    it('kvstore.removeItem', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.removeItem = "test";
 
         let correctResult = {
             "body": null,
@@ -386,6 +480,78 @@ describe('#endpoint', () => {
 
         let correctResult = {
             "body": true,
+            "status": 200
+        };
+
+        endpoint(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            assert.equal(testResult.body, correctResult.body, 'body');
+
+            done();
+        });
+    });
+
+    it('pubnub.time', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.pnTime = true;
+
+        let correctResult = {
+            "status": 200
+        };
+
+        endpoint(request, response).then((testResult) => {
+
+            assert.equal(testResult.status, correctResult.status, 'status');
+            expect(testResult.body).to.be.a('number');
+
+            done();
+        });
+    });
+
+    it('fails to pubnub.publish', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.pub = true;
+
+        request.toPublish = null;
+
+        let correctResult = {
+            "status": 500
+        };
+
+        endpoint(request, response).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+        }).then(() => {
+            request.toPublish = {
+                "message": null
+            };
+            return endpoint(request, response);
+        }).then((testResult) => {
+            assert.equal(testResult.status, correctResult.status, 'status');
+            done();
+        });
+
+    });
+
+    it('pubnub.publish', function (done) {
+        
+        let request = Object.assign({}, endpointRequestObject);
+        let response = Object.assign({}, endpointResponseObject);
+
+        request.pub = true;
+
+        request.toPublish = {
+            "message": "test"
+        };
+
+        let correctResult = {
+            "body": "Sent",
             "status": 200
         };
 
