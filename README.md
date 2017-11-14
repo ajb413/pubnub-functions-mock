@@ -16,13 +16,19 @@ Unit test PubNub Functions event handlers on your local machine
 Any module can be overridden using `overrideDefaultModules` within a single test body. The module or modules will only be overridden in that single test block.
 ```javascript
 endpoint.overrideDefaultModules({
-    "pubnub" : {}
+    "xhr" : () => {
+        return new Promise.resolve(200);
+    }
 });
 ```
 
 To override a default module in all tests, pass the module object when the Event Handler is initialized.
 ```javascript
-endpoint = Mock('./myEndpointEventHandler.js', { "pubnub" : {} });
+endpoint = Mock('./myEndpointEventHandler.js', { 
+    "xhr" : () => {
+        return new Promise.resolve(200);
+    }
+});
 ```
 
 Mock the KVStore for a test
