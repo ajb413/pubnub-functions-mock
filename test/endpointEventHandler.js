@@ -116,6 +116,75 @@ export default (request, response) => {
         }).catch(testFail);
     }
 
+    if (request.toGetState) {
+        let pubnub = require('pubnub');
+        let toGetState = request.toGetState;
+        return pubnub.getState(toGetState).then((value) => {
+            if (value.message === 'OK') {
+                response.status = 200;
+                return response.send(value.message); 
+            } else {
+                return testFail(value); 
+            }
+            
+        }).catch(testFail);
+    }
+
+    if (request.toSetState) {
+        let pubnub = require('pubnub');
+        let toSetState = request.toSetState;
+        return pubnub.setState(toSetState).then((value) => {
+            if (value.message === 'OK') {
+                response.status = 200;
+                return response.send(value.message); 
+            } else {
+                return testFail(value); 
+            }
+            
+        }).catch(testFail);
+    }
+
+    if (request.toHereNow) {
+        let pubnub = require('pubnub');
+        return pubnub.hereNow().then((value) => {
+            if (value.message === 'OK') {
+                response.status = 200;
+                return response.send(value.message); 
+            } else {
+                return testFail(value); 
+            }
+            
+        }).catch(testFail);
+    }
+
+    if (request.toWhereNow) {
+        let pubnub = require('pubnub');
+        let toWhereNow = request.toWhereNow;
+        return pubnub.whereNow(toWhereNow).then((value) => {
+            if (value.message === 'OK') {
+                response.status = 200;
+                return response.send(value.message); 
+            } else {
+                return testFail(value); 
+            }
+            
+        }).catch(testFail);
+    }
+
+    if (request.history) {
+        let pubnub = require('pubnub');
+        let history = request.history.toHistory;
+        return pubnub.history(history).then((value) => {
+            if (value.messages) {
+                response.status = 200;
+                return response.send(true); 
+            } else {
+                return testFail(value); 
+            }
+
+        }).catch(testFail);
+    }
+
     response.status = 200;
     return response.send("Hello World!");
 };

@@ -95,7 +95,7 @@ let pubnubInterface = {
   },
   history: (obj) => {
     return new Promise((resolve, reject) => { 
-      if ( !obj || typeof(obj) !== "object" ) {
+      if (!obj || typeof(obj) !== "object") {
         reject("Cannot read property 'extraOptions'");
       }
 
@@ -107,13 +107,9 @@ let pubnubInterface = {
     });
   },
   whereNow: (obj) => {
-    return new Promise((resolve, reject) => {
-      if ( typeof(obj) !== "object" || !obj.uuid ) {
-        reject("[whereNow] 'uuid' is required");
-      }
-
-      if ( typeof(obj.uuid) !== "string" ) {
-        reject("uuid must be a String");
+    return new Promise((resolve) => {
+      if (typeof(obj) !== "object" || obj.uuid === undefined) {
+        throw Error("[whereNow] 'uuid' is required");
       }
 
       resolve({
@@ -139,43 +135,41 @@ let pubnubInterface = {
     });
   },
   setState: (obj) => {
-    return new Promise((resolve, reject) => {
-      if ( typeof(obj) !== "object" ) {
-        reject("[setState] Object is required");
+    return new Promise((resolve) => {
+      if (typeof(obj) !== "object" || obj.uuid === undefined) {
+        throw Error("[setState] 'uuid' is required");
       }
 
       resolve({
         "status": 200,
         "message": "OK",
         "payload": {},
-        "uuid": obj.uuid || "",
+        "uuid": String(obj.uuid),
         "channel": obj.channels || [],
         "service": "Presence"
       });
+
     });
   },
   getState: (obj) => {
-    return new Promise((resolve, reject) => {
-      if ( typeof(obj) !== "object" || !obj.uuid ) {
-        reject("[getState] 'uuid' is required");
-      }
-
-      if ( typeof(obj.uuid) !== "string" ) {
-        reject("uuid must be a String");
+    return new Promise((resolve) => {
+      if (typeof(obj) !== "object" || obj.uuid === undefined) {
+        throw Error("[getState] 'uuid' is required");
       }
 
       resolve({
         "status": 200,
         "message": "OK",
         "payload": {},
-        "uuid": obj.uuid,
+        "uuid": String(obj.uuid),
         "channel": obj.channels || [],
         "service": "Presence"
       });
+
     });
   },
   grant: (obj) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (typeof(obj) !== "object" || (!obj.channels && !obj.channelGroups)) {
         throw Error("[grant] Object with property 'channels' or 'channelGroups' is required");
       }
