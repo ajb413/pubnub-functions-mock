@@ -8,6 +8,9 @@ export default (request, response) => {
     return response.send(err);
   };
 
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// Test XHR
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   if (request.xhr) {
     return xhr.fetch('https://httpbin.org/get').then((res) => {
       if (res.status >= 200 && res.status < 300) {
@@ -19,6 +22,9 @@ export default (request, response) => {
     }).catch(testFail);
   }
 
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// Test KVStore
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   if (request.getKvValue) {
     let key = request.key;
     return kvstore.get(key).then((value) => {
@@ -80,6 +86,9 @@ export default (request, response) => {
     }).catch(testFail);
   }
 
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// Test codec
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   if (request.b64) {
     let btoa = base64Codec.btoa('hello'); // aGVsbG8=
     let atob = base64Codec.atob('aGVsbG8='); // hello
@@ -97,6 +106,9 @@ export default (request, response) => {
     return response.send(body);
   }
 
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// Test module overriding
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   if (request.testOverride) {
     let pubnub = require('pubnub');
     response.status = 200;
@@ -111,6 +123,9 @@ export default (request, response) => {
     }
   }
 
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// Test PubNub
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   if (request.pnTime) {
     let pubnub = require('pubnub');
     return pubnub.time().then((value) => {

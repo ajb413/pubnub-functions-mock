@@ -18,6 +18,7 @@ const defaultModules = {
 };
 
 let importEventHandler = (ehFilePath, moduleMocks) => {
+
   const ehContents = fs.readFileSync(ehFilePath, 'UTF-8');
   const transformedCode = babel.transform(ehContents, {
     'presets': ['es2015'],
@@ -40,24 +41,29 @@ let importEventHandler = (ehFilePath, moduleMocks) => {
 
   // Method to set the KVStore to a JS object for a test
   ehDefinition.mockKVStoreData = (kvObject) => {
+
     if (!kvObject || typeof(kvObject) !== 'object') {
       throw Error('[mockKVStoreData] expects Object');
     }
 
     kvInterface.keyValueStorage = kvObject;
+
   };
 
   // Method to set the KVStore counters to a JS object for a test
   ehDefinition.mockKVStoreCounters = (kvObject) => {
+
     if (!kvObject || typeof(kvObject) !== 'object') {
       throw Error('[mockKVStoreCounters] expects Object');
     }
 
     kvInterface.keyValueCounters = kvObject;
+
   };
 
   // Method to override any default module mocks
   ehDefinition.overrideDefaultModules = (overrideModules) => {
+
     if (!overrideModules || typeof(overrideModules) !== 'object') {
       throw Error('[overrideDefaultModules] expects Object');
     }
@@ -65,6 +71,7 @@ let importEventHandler = (ehFilePath, moduleMocks) => {
     Object.keys(overrideModules).forEach((moduleKey) => {
       modules[moduleKey] = overrideModules[moduleKey];
     });
+
   };
 
   // Override default mocks for every single test in a file

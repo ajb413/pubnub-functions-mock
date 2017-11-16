@@ -14,13 +14,16 @@ const endpointResponseObject = {
   'status': 200,
   'send': function( body ) {
     return new Promise((resolve) => {
+
       if (body === undefined) {
         body = '';
       }
+
       resolve({
         'body': body,
         'status': this.status,
       });
+
     });
   },
 };

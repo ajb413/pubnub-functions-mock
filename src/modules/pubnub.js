@@ -6,6 +6,7 @@ const pubnubInterface = {
   },
   publish: (obj) => {
     return new Promise((resolve) => {
+
       if (!obj) {
         throw Error('[publish] Object is required');
       }
@@ -17,10 +18,12 @@ const pubnubInterface = {
       }
 
       resolve([1, 'Sent', ts]);
+
     });
   },
   history: (obj) => {
     return new Promise((resolve) => {
+
       if (!obj || typeof(obj) !== 'object') {
         throw Error('Cannot read property \'extraOptions\'');
       }
@@ -30,10 +33,12 @@ const pubnubInterface = {
         'startTimeToken': Date.now() * 10000,
         'endTimeToken': Date.now() * 10000,
       });
+
     });
   },
   whereNow: (obj) => {
     return new Promise((resolve) => {
+
       if (typeof(obj) !== 'object' || obj.uuid === undefined) {
         throw Error('[whereNow] \'uuid\' is required');
       }
@@ -46,6 +51,7 @@ const pubnubInterface = {
         },
         'service': 'Presence',
       });
+
     });
   },
   hereNow: () => {
@@ -62,6 +68,7 @@ const pubnubInterface = {
   },
   setState: (obj) => {
     return new Promise((resolve) => {
+
       if (typeof(obj) !== 'object' || obj.uuid === undefined) {
         throw Error('[setState] \'uuid\' is required');
       }
@@ -74,10 +81,12 @@ const pubnubInterface = {
         'channel': obj.channels || [],
         'service': 'Presence',
       });
+
     });
   },
   getState: (obj) => {
     return new Promise((resolve) => {
+
       if (typeof(obj) !== 'object' || obj.uuid === undefined) {
         throw Error('[getState] \'uuid\' is required');
       }
@@ -90,10 +99,12 @@ const pubnubInterface = {
         'channel': obj.channels || [],
         'service': 'Presence',
       });
+
     });
   },
   grant: (obj) => {
     return new Promise((resolve) => {
+
       if (typeof(obj) !== 'object' || (!obj.channels && !obj.channelGroups)) {
         let err = '[grant] expects Object with [channels] or [channelGroups]';
         throw Error(err);
@@ -112,9 +123,11 @@ const pubnubInterface = {
         'service': 'Access Manager',
         'status': 200,
       });
+
     });
   },
 };
+
 pubnubInterface.fire = pubnubInterface.publish;
 
 module.exports = pubnubInterface;
