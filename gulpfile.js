@@ -5,6 +5,7 @@ const istanbul = require('gulp-istanbul');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
 const sourcemaps = require('gulp-sourcemaps');
+const shell = require('gulp-shell');
  
 const paths = {
   scripts: ['src/**/*.js'],
@@ -13,12 +14,13 @@ const paths = {
 
 gulp.task('test', () => {
   return gulp.src('test/unit.test.js', {read: false})
-    .pipe(mocha())
-    .pipe(istanbul.writeReports());
+    .pipe(shell([
+      'nyc npm test && nyc report --reporter=text-lcov | coveralls'
+    ]));
 });
 
 gulp.task('lint', () => {
-  return gulp.src([scripts, tests,'!node_modules/**'])
+  return gulp.src([paths.scripts, paths.tests,'!node_modules/**'])
     .pipe(eslint())
     .pipe(eslint.format()) 
     .pipe(eslint.failAfterError());
