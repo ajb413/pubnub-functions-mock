@@ -56,6 +56,14 @@ let importEventHandler = (ehFilePath, moduleMocks) => {
     kvInterface.keyValueCounters = kvObject;
   };
 
+  ehDefinition.getKVStoreData = () => {
+    return kvInterface.keyValueStorage;
+  };
+
+  ehDefinition.getKVStoreCounters = () => {
+    return kvInterface.keyValueCounters;
+  };
+
   // Method to override any default module mocks
   ehDefinition.overrideDefaultModules = (overrideModules) => {
     if (!overrideModules || typeof(overrideModules) !== 'object') {

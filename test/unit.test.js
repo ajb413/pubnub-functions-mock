@@ -811,4 +811,36 @@ describe('#endpoint', () => {
       done();
     });
   });
+
+  it('getKVStoreData', function(done) {
+    let request = Object.assign({}, endpointRequestObject);
+    let response = Object.assign({}, endpointResponseObject);
+
+    let preExistingValue = {'key': 'value'};
+
+    // mock a pre-existing KVStore value for this test only
+    endpoint.mockKVStoreData(preExistingValue);
+
+    let kv = endpoint.getKVStoreData();
+
+    assert.equal(kv.key, preExistingValue.key, 'compare KVStore');
+
+    done();
+  });
+
+  it('getKVStoreCounters', function(done) {
+    let request = Object.assign({}, endpointRequestObject);
+    let response = Object.assign({}, endpointResponseObject);
+
+    let preExistingValue = {'key': 123};
+
+    // mock a pre-existing KVStore value for this test only
+    endpoint.mockKVStoreCounters(preExistingValue);
+
+    let kv = endpoint.getKVStoreCounters();
+
+    assert.equal(kv.key, preExistingValue.key, 'compare KVStore');
+
+    done();
+  });
 });
