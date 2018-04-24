@@ -8,6 +8,7 @@ const nodeFetch = require('node-fetch');
 const pubnubInterface = require('./modules/pubnub.js');
 const kvInterface = require('./modules/kvstore.js');
 const codec = require('./modules/codec.js');
+const vault = require('./modules/vault.js');
 
 const defaultModules = {
   'xhr': {'fetch': nodeFetch},
@@ -15,6 +16,7 @@ const defaultModules = {
   'kvstore': kvInterface,
   'codec/query_string': codec.queryInterface,
   'codec/base64': codec.base64Interface,
+  'vault': vault,
 };
 
 let importEventHandler = (ehFilePath, moduleMocks) => {

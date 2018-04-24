@@ -843,4 +843,42 @@ describe('#endpoint', () => {
 
     done();
   });
+
+  it('vault.get', function(done) {
+    let request = Object.assign({}, endpointRequestObject);
+    let response = Object.assign({}, endpointResponseObject);
+
+    request.vault = {
+      key: 'myKey',
+    };
+
+    let correctResult = {
+      'body': true,
+      'status': 200,
+    };
+
+    endpoint(request, response).then((testResult) => {
+      assert.equal(testResult.status, correctResult.status, 'status');
+      assert.equal(testResult.body, correctResult.body, 'body');
+      done();
+    }).catch(err => { console.log(err) });
+  });
+
+  it('fails vault.get', function(done) {
+    let request = Object.assign({}, endpointRequestObject);
+    let response = Object.assign({}, endpointResponseObject);
+
+    request.vault = {
+      key: undefined,
+    };
+
+    let correctResult = {
+      'status': 500,
+    };
+
+    endpoint(request, response).then((testResult) => {
+      assert.throw(Error);
+      done();
+    });
+  });
 });
