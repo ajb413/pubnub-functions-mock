@@ -2,6 +2,7 @@ export default (request, response) => {
   const kvstore = require('kvstore');
   const base64Codec = require('codec/base64');
   const xhr = require('xhr');
+  const vault = require('vault');
 
   const testFail = (err) => {
     response.status = 500;
@@ -208,6 +209,18 @@ export default (request, response) => {
         response.status = 200;
         return response.send(true);
       } else {
+        return testFail(value);
+      }
+    }).catch(testFail);
+  }
+
+  if (request.vault) {
+    return vault.get(request.vault.key).then((value) => {
+      if (value) {
+        response.status = 200;
+        return response.send(true);
+      }
+      else {
         return testFail(value);
       }
     }).catch(testFail);

@@ -843,4 +843,64 @@ describe('#endpoint', () => {
 
     done();
   });
+
+  it('vault.get', function(done) {
+    let request = Object.assign({}, endpointRequestObject);
+    let response = Object.assign({}, endpointResponseObject);
+
+    request.vault = {
+      key: 'myKey',
+    };
+
+    let correctResult = {
+      'body': true,
+      'status': 200,
+    };
+
+    endpoint(request, response).then((testResult) => {
+      assert.equal(testResult.status, correctResult.status, 'status');
+      assert.equal(testResult.body, correctResult.body, 'body');
+      done();
+    }).catch(err => { console.log(err) });
+  });
+
+  it('fails vault.get', function(done) {
+    let request = Object.assign({}, endpointRequestObject);
+    let response = Object.assign({}, endpointResponseObject);
+
+    request.vault = {
+      key: undefined,
+    };
+
+    let correctResult = {
+      'body': 'Invalid key [undefined], non-empty string required',
+      'status': 500,
+    };
+
+    endpoint(request, response).then((testResult) => {
+      assert.equal(testResult.status, correctResult.status, 'status');
+      assert.equal(testResult.body, correctResult.body, 'body');
+      done();
+    });
+  });
+
+  it('fails vault.get for empty string', function(done) {
+    let request = Object.assign({}, endpointRequestObject);
+    let response = Object.assign({}, endpointResponseObject);
+
+    request.vault = {
+      key: '',
+    };
+
+    let correctResult = {
+      'body': 'Invalid key [], non-empty string required',
+      'status': 500,
+    };
+
+    endpoint(request, response).then((testResult) => {
+      assert.equal(testResult.status, correctResult.status, 'status');
+      assert.equal(testResult.body, correctResult.body, 'body');
+      done();
+    });
+  });
 });
