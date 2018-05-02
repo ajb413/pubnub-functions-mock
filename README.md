@@ -12,6 +12,7 @@ Unit test PubNub Functions event handlers on your local machine
 - codec/query_string
 - codec/base64
 - PubNub
+- Vault
 
 Any module can be overridden using `overrideDefaultModules` within a single test body. The module or modules will only be overridden in that single test block.
 ```javascript
