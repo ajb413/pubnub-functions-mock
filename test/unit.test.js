@@ -873,11 +873,13 @@ describe('#endpoint', () => {
     };
 
     let correctResult = {
+      'body': 'Invalid key undefined, non-empty string required',
       'status': 500,
     };
 
     endpoint(request, response).then((testResult) => {
-      assert.throw(Error);
+      assert.equal(testResult.status, correctResult.status, 'status');
+      assert.equal(testResult.body, correctResult.body, 'body');
       done();
     });
   });
