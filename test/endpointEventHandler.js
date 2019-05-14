@@ -226,6 +226,33 @@ export default (request, response) => {
     }).catch(testFail);
   }
 
+  if (request.channelGroups) {
+    let pubnub = require('pubnub');
+    let channelGroups = request.channelGroups;
+
+    if (channelGroups.addChannels) {
+      return pubnub.channelGroups.addChannels(channelGroups.addChannels).then((value) => {
+        if (value) {
+          response.status = 200;
+          return response.send(value)
+        } else {
+          return testFail(value);
+        }
+      })
+    }
+
+    if (channelGroups.removeChannels) {
+      return pubnub.channelGroups.removeChannels(channelGroups.removeChannels).then((value) => {
+        if (value) {
+          response.status = 200;
+          return response.send(value)
+        } else {
+          return testFail(value);
+        }
+      })
+    }
+  }
+
   response.status = 200;
   return response.send('Hello World!');
 };
