@@ -114,6 +114,64 @@ const pubnubInterface = {
       });
     });
   },
+  channelGroups: {
+    addChannels: (obj) => {
+      return new Promise((resolve) => {
+        if (typeof(obj) !== 'object' || (!obj.channels && !obj.channelGroup)) {
+          let err = '[channelGroups.addChannels] expects Object with [channels] and \'channelGroup\'';
+          throw Error(err);
+        }
+
+        resolve({
+          error: false,
+          operation: "PNAddChannelsToGroupOperation",
+          status: 200
+        });
+      });
+    },
+    removeChannels: (obj) => {
+      return new Promise((resolve) => {
+        if (typeof(obj) !== 'object' || (!obj.channelGroup)) {
+          let err = '[channelGroups.addChannels] expects Object with [channels] and \'channelGroup\'';
+          throw Error(err);
+        }
+
+        resolve({
+          error: false,
+          operation: "PNRemoveChannelsFromGroupOperation",
+          status: 200
+        });
+      });
+    },
+    listChannels: (obj) => {
+      return new Promise((resolve) => {
+        if (typeof(obj) !== 'object' || (!obj.channelGroup)) {
+          let err = '[channelGroups.addChannels] expects Object with \'channelGroup\'';
+          throw Error(err);
+        }
+
+        resolve({
+          error: false,
+          operation: "PNChannelsForGroupOperation",
+          status: 200
+        });
+      });
+    },
+    deleteGroup: (obj) => {
+      return new Promise((resolve) => {
+        if (typeof(obj) !== 'object' || (!obj.channelGroup)) {
+          let err = '[channelGroups.addChannels] expects Object with \'channelGroup\'';
+          throw Error(err);
+        }
+
+        resolve({
+          error: false,
+          operation: "PNRemoveGroupOperation",
+          status: 200
+        });
+      });
+    },
+  },
 };
 pubnubInterface.fire = pubnubInterface.publish;
 

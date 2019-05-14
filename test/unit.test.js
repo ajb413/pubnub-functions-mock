@@ -903,4 +903,65 @@ describe('#endpoint', () => {
       done();
     });
   });
+
+  it('adds a channel to channelGroups API', function(done) {
+    let request = Object.assign({}, endpointRequestObject);
+    let response = Object.assign({}, endpointResponseObject);
+
+    request.channelGroups = {
+      addChannels: {
+        channels: ['abcAsEasyAs123'],
+        channelGroup: 'yahBoiMichealJackson',
+        uuid: 'USER-MJ-0',
+      }
+    };
+
+    let correctResult = {
+      body: {
+        error: false,
+        operation: "PNAddChannelsToGroupOperation",
+        status: 200
+      },
+      status: 200
+    }
+
+    endpoint(request, response).then((testResult) => {
+      assert.equal(testResult.status, correctResult.status, 'status');
+      assert.equal(testResult.body.error, correctResult.body.error, 'body.error');
+      assert.equal(testResult.body.operation, correctResult.body.operation, 'body.operation');
+      assert.equal(testResult.body.status, correctResult.body.status, 'body.status');
+      done();
+    });
+  });
+
+  it('removes a channel from channelGroups API', function(done) {
+    let request = Object.assign({}, endpointRequestObject);
+    let response = Object.assign({}, endpointResponseObject);
+
+    request.channelGroups = {
+      removeChannels: {
+        channels: ['abcAsEasyAs123'],
+        channelGroup: 'yahBoiMichealJackson',
+        uuid: 'USER-MJ-1',
+      }
+    };
+
+    let correctResult = {
+      body: {
+        error: false,
+        operation: "PNRemoveChannelsFromGroupOperation",
+        status: 200
+      },
+      status: 200
+    };
+
+    endpoint(request, response).then((testResult) => {
+      assert.equal(testResult.status, correctResult.status, 'status');
+      assert.equal(testResult.body.error, correctResult.body.error, 'body.error');
+      assert.equal(testResult.body.operation, correctResult.body.operation, 'body.operation');
+      assert.equal(testResult.body.status, correctResult.body.status, 'body.status');
+      done();
+    });
+
+  });
 });
