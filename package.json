@@ -1,6 +1,6 @@
 {
   "name": "pubnub-functions-mock",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Mocks PubNub Functions modules for unit testing",
   "main": "src/index.js",
   "repository": {
