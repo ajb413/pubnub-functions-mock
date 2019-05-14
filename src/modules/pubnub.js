@@ -143,34 +143,6 @@ const pubnubInterface = {
         });
       });
     },
-    listChannels: (obj) => {
-      return new Promise((resolve) => {
-        if (typeof(obj) !== 'object' || (!obj.channelGroup)) {
-          let err = '[channelGroups.addChannels] expects Object with \'channelGroup\'';
-          throw Error(err);
-        }
-
-        resolve({
-          error: false,
-          operation: "PNChannelsForGroupOperation",
-          status: 200
-        });
-      });
-    },
-    deleteGroup: (obj) => {
-      return new Promise((resolve) => {
-        if (typeof(obj) !== 'object' || (!obj.channelGroup)) {
-          let err = '[channelGroups.addChannels] expects Object with \'channelGroup\'';
-          throw Error(err);
-        }
-
-        resolve({
-          error: false,
-          operation: "PNRemoveGroupOperation",
-          status: 200
-        });
-      });
-    },
   },
 };
 pubnubInterface.fire = pubnubInterface.publish;
